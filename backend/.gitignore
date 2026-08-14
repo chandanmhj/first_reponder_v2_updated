@@ -1,0 +1,13 @@
+.env
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+.DS_Store
+
+# Generated at runtime — SQLite DBs, ChromaDB persistence.
+# Committing these would leak user data and bloat the repo.
+data/*.db
+data/chroma_db/
