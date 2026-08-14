@@ -129,8 +129,12 @@ export default function Chat() {
   }
 
   return (
-    <div className="flex flex-col h-screen md:pl-24">
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 pt-6" style={{ paddingBottom: activeEmergency ? 190 : 100 }}>
+    <div className="flex flex-col h-[100dvh] md:pl-24">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 pt-6" style={{
+          paddingBottom: activeEmergency
+            ? "calc(190px + env(safe-area-inset-bottom, 0px))"
+            : "calc(100px + env(safe-area-inset-bottom, 0px))",
+        }}>
         <div className="max-w-lg mx-auto flex flex-col gap-3">
           {loaded && messages.length === 0 && <WelcomeState onExample={(p) => sendMessage(p)} />}
 
@@ -143,7 +147,7 @@ export default function Chat() {
       </div>
 
       {activeEmergency && (
-        <div className="fixed left-0 right-0 z-30 px-4 md:pl-28" style={{ bottom: 88 }}>
+        <div className="fixed left-0 right-0 z-30 px-4 md:pl-28" style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 88px)" }}>
           <div className="glass-elevated max-w-lg mx-auto flex gap-3 p-3">
             <a href="tel:112" className="btn-alert btn flex-1">
               <PhoneIcon size={18} /> Call 112
@@ -155,7 +159,13 @@ export default function Chat() {
         </div>
       )}
 
-      <div className="fixed bottom-0 left-0 right-0 z-30 px-4 pb-4 pt-2 md:pl-28">
+      <div
+        className="fixed left-0 right-0 z-30 px-4 pt-2 md:pl-28"
+        style={{
+          bottom: "env(safe-area-inset-bottom, 0px)",
+          paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 16px)",
+        }}
+      >
         <div className="max-w-lg mx-auto">
           {attachedFile && (
             <div className="glass inline-flex items-center gap-2 px-3 py-1.5 mb-2 text-xs">
