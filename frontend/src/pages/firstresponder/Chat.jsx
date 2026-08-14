@@ -15,20 +15,20 @@ import {
 
 const EXAMPLE_PROMPTS = ["Someone is choking", "Severe bleeding", "Person is unconscious"];
 
+// Height of the app's outer bottom nav bar (Home/NutriScan/Responder/Profile).
+// Match this to its actual rendered height in your layout component.
+const NAV_H = 64;
+const INPUT_H = 76; // approx height of the input row incl. padding
+
 export default function Chat() {
   const { showToast } = useToast();
 
-  const [messages, setMessages] = useState([]); // {role, text, scenario, step, media_url, media_type, is_handover_summary}
+  const [messages, setMessages] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [input, setInput] = useState("");
   const [attachedFile, setAttachedFile] = useState(null);
   const [sending, setSending] = useState(false);
-
-  // The active emergency state is ALWAYS derived from the latest assistant
-  // reply, not a one-time flag - this is what makes the action bar persist
-  // and update across an ongoing emergency instead of vanishing after one
-  // appearance (see the design discussion this screen is built around).
-  const [activeEmergency, setActiveEmergency] = useState(null); // {scenario, step, lastUserMessage} | null
+  const [activeEmergency, setActiveEmergency] = useState(null);
   const [locatingHospital, setLocatingHospital] = useState(false);
 
   const scrollRef = useRef(null);
@@ -38,7 +38,6 @@ export default function Chat() {
     firstResponder
       .history()
       .then((rows) => {
-        // API returns most-recent-first; reverse to chronological for display
         const chronological = [...rows].reverse();
         const flat = [];
         chronological.forEach((row) => {
@@ -119,7 +118,6 @@ export default function Chat() {
         showToast("Couldn't find a nearby hospital.", "error");
         return;
       }
-      // Always a NEW tab - the chat must never be navigated away from or lost.
       window.open(`https://www.google.com/maps/dir/?api=1&destination=${top.lat},${top.lng}`, "_blank");
     } catch (err) {
       showToast(err.message || "Couldn't get your location.", "error");
@@ -130,11 +128,15 @@ export default function Chat() {
 
   return (
     <div className="flex flex-col h-[100dvh] md:pl-24">
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 pt-6" style={{
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto px-4 pt-6"
+        style={{
           paddingBottom: activeEmergency
-            ? "calc(190px + env(safe-area-inset-bottom, 0px))"
-            : "calc(100px + env(safe-area-inset-bottom, 0px))",
-        }}>
+            ? `calc(${NAV_H + INPUT_H + 90}px + env(safe-area-inset-bottom, 0px))`
+            : `calc(${NAV_H + INPUT_H}px + env(safe-area-inset-bottom, 0px))`,
+        }}
+      >
         <div className="max-w-lg mx-auto flex flex-col gap-3">
           {loaded && messages.length === 0 && <WelcomeState onExample={(p) => sendMessage(p)} />}
 
@@ -147,7 +149,10 @@ export default function Chat() {
       </div>
 
       {activeEmergency && (
-        <div className="fixed left-0 right-0 z-30 px-4 md:pl-28" style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 88px)" }}>
+        <div
+          className="fixed left-0 right-0 z-30 px-4 md:pl-28"
+          style={{ bottom: `calc(${NAV_H + INPUT_H}px + env(safe-area-inset-bottom, 0px))` }}
+        >
           <div className="glass-elevated max-w-lg mx-auto flex gap-3 p-3">
             <a href="tel:112" className="btn-alert btn flex-1">
               <PhoneIcon size={18} /> Call 112
@@ -162,8 +167,8 @@ export default function Chat() {
       <div
         className="fixed left-0 right-0 z-30 px-4 pt-2 md:pl-28"
         style={{
-          bottom: "env(safe-area-inset-bottom, 0px)",
-          paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 16px)",
+          bottom: `calc(${NAV_H}px + env(safe-area-inset-bottom, 0px))`,
+          paddingBottom: "16px",
         }}
       >
         <div className="max-w-lg mx-auto">
